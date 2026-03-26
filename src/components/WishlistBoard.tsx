@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { GameCard } from "./GameCard";
 import { AddGameModal } from "./AddGameModal";
 import { useWishlist } from "../hooks/useWishlist";
@@ -12,16 +12,17 @@ export function WishlistBoard() {
 
   const existingIDs = new Set(games.map((g) => g.id));
 
-  const handleRefreshAll = async () => {
+  const handleRefreshAll = useCallback(async () => {
     await refreshAll(games.map((g) => g.id));
     setLastRefreshed(new Date());
-  };
+  }, [games, refreshAll]);
 
   // Auto-refresh on mount
   useEffect(() => {
     if (games.length > 0) {
       handleRefreshAll();
     }
+    // Only run once on mount; subsequent refreshes are triggered manually
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
